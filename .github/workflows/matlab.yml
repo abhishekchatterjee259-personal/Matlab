@@ -25,7 +25,7 @@ jobs:
         with:
           command: |
             % Open the project using relative path
-            proj = openProject("Matlab/Add_Test.prj");
+            proj = openProject("D:\GIT\Matlab_1\Matlab");
 
             % Load your Simulink model
             load_system("Models/Add_test");

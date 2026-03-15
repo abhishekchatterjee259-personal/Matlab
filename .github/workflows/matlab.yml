@@ -24,8 +24,8 @@ jobs:
         uses: matlab-actions/run-command@v1
         with:
           command: |
-            % Open the correct project (adjust path if nested)
-            proj = openProject("Matlab/Add_Test");
+            % Open the project using relative path
+            proj = openProject("Matlab/Add_Test.prj");
 
             % Load your Simulink model
             load_system("Models/Add_test");

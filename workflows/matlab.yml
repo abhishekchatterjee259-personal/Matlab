@@ -1,0 +1,28 @@
+---
+name: MATLAB CI
+
+on:
+  push:
+    branches: [main, Dev]
+  pull_request:
+    branches: [main, Dev]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1
+
+      - name: Verify MATLAB installation
+        uses: matlab-actions/run-command@v1
+        with:
+          command: |
+            disp('MATLAB CI pipeline is working!');

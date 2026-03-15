@@ -24,20 +24,21 @@ jobs:
         uses: matlab-actions/run-command@v1
         with:
           command: |
-            % Open the project
-            proj = matlab.project.openProject("MyNewProject");
+            % Open the project (use openProject instead of matlab.project.openProject)
+            proj = openProject("MyNewProject");
 
             % Load your Simulink model
             load_system("Add_test");
 
-            % Run Process Advisor tasks
+            % Run Process Advisor
             advisorObj = Simulink.Check.ModelAdvisor.getModelAdvisor("Add_test");
             advisorObj.run;
 
-            % Export results to a report
+            % Export results
             advisorObj.exportResults("process_advisor_report.html");
 
             disp('Process Advisor completed in CI pipeline!');
+
       - name: Upload Process Advisor Report
         uses: actions/upload-artifact@v4
         with:

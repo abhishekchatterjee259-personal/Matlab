@@ -1,4 +1,3 @@
----
 name: MATLAB CI
 
 on:
@@ -21,8 +20,26 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
 
-      - name: Verify MATLAB installation
+      - name: Run Process Advisor
         uses: matlab-actions/run-command@v1
         with:
           command: |
-            disp('MATLAB CI pipeline is working!');
+            % Open the project
+            proj = matlab.project.openProject("MyNewProject");
+
+            % Load your Simulink model
+            load_system("Add_test");
+
+            % Run Process Advisor tasks
+            advisorObj = Simulink.Check.ModelAdvisor.getModelAdvisor("Add_test");
+            advisorObj.run;
+
+            % Export results to a report
+            advisorObj.exportResults("process_advisor_report.html");
+
+            disp('Process Advisor completed in CI pipeline!');
+      - name: Upload Process Advisor Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: process-advisor-report
+          path: process_advisor_report.html

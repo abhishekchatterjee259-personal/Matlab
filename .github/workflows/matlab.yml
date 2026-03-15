@@ -24,18 +24,18 @@ jobs:
         uses: matlab-actions/run-command@v1
         with:
           command: |
-            % Open the project (use openProject instead of matlab.project.openProject)
-            proj = openProject("MyNewProject");
+            % Open the correct project (adjust path if nested)
+            proj = openProject("Matlab/Add_Test");
 
             % Load your Simulink model
-            load_system("Add_test");
+            load_system("Models/Add_test");
 
             % Run Process Advisor
-            advisorObj = Simulink.Check.ModelAdvisor.getModelAdvisor("Add_test");
+            advisorObj = Simulink.Check.ModelAdvisor.getModelAdvisor("Models/Add_test");
             advisorObj.run;
 
             % Export results
-            advisorObj.exportResults("process_advisor_report.html");
+            advisorObj.exportResults("PA_Results/process_advisor_report.html");
 
             disp('Process Advisor completed in CI pipeline!');
 
@@ -43,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: process-advisor-report
-          path: process_advisor_report.html
+          path: Matlab/Add_Test/PA_Results/process_advisor_report.html

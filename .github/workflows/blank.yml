@@ -1,4 +1,3 @@
----
 name: MATLAB CI
 
 on:
@@ -18,11 +17,49 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up MATLAB
+      - name: Set up MATLAB with toolboxes
         uses: matlab-actions/setup-matlab@v1
+        with:
+          products: Simulink, Simulink_Check, Simulink_Test, Embedded_Coder
 
       - name: Verify MATLAB installation
         uses: matlab-actions/run-command@v1
         with:
           command: |
             disp('MATLAB CI pipeline is working!');
+
+      - name: Load MATLAB project
+        uses: matlab-actions/run-command@v1
+        with:
+          command: |
+            warning('off','all'); % Suppress warnings during project load
+            proj = matlab.project.loadProject('Matlab-Test-CICD.prj');
+            disp(['Loaded project: ', proj.Name]);
+            warning('on','all');  % Re-enable warnings after load
+
+      - name: Run Process Advisor checks (if available)
+        uses: matlab-actions/run-command@v1
+        with:
+          command: |
+            proj = matlab.project.loadProject('Matlab-Test-CICD.prj');
+
+            % Check if Process Advisor API is available
+            if exist('padv.ProcessModel','class')
+                pm = padv.ProcessModel();
+                processmodel(pm);
+                results = pm.runAll();
+                disp('Process Advisor checks completed.');
+                disp(results);
+
+                % Save results to PA_Results for artifact upload
+                save(fullfile(proj.RootFolder,'PA_Results','ci_results.mat'),'results');
+            else
+                warning('Process Advisor not available in this environment. Skipping checks.');
+            end
+
+      - name: Upload Process Advisor results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PA_Results
+          path: PA_Results

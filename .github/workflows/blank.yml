@@ -46,8 +46,8 @@ jobs:
                 results = pm.runAll();
                 disp('Process Advisor checks completed.');
                 disp(results);
-                % Ensure results folder exists
-                resultsDir = fullfile(proj.RootFolder,'PA_Results');
+                % Ensure results folder exists in runner workspace
+                resultsDir = fullfile(pwd,'PA_Results');
                 if ~exist(resultsDir,'dir')
                     mkdir(resultsDir);
                 end

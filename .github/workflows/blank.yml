@@ -15,15 +15,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v1
 
       - name: Set up MATLAB with toolboxes
-        uses: matlab-actions/setup-matlab@v4
+        uses: matlab-actions/setup-matlab@v1
         with:
           products: Simulink, Simulink_Check, Simulink_Test, Embedded_Coder
 
       - name: Verify MATLAB installation
-        uses: matlab-actions/run-command@v4
+        uses: matlab-actions/run-command@v1
         with:
           command: |
             disp('MATLAB CI pipeline is working!');

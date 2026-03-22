@@ -2,9 +2,9 @@ name: MATLAB CI
 
 on:
   push:
-    branches: [main, Dev, Test-Matlab-CI/CD]
+    branches: [main, Dev, test_Abhi]
   pull_request:
-    branches: [main, Dev, Test-Matlab-CI/CD]
+    branches: [main, Dev, test_Abhi]
 
 permissions:
   contents: read

@@ -2,9 +2,9 @@ name: MATLAB CI
 
 on:
   push:
-    branches: [main, Dev, Test-Matlab-CI/CD]
+    branches: [main, Dev]
   pull_request:
-    branches: [main, Dev, Test-Matlab-CI/CD]
+    branches: [main, Dev]
 
 permissions:
   contents: read
@@ -18,18 +18,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up MATLAB with toolboxes
-        uses: matlab-actions/setup-matlab@v1
+        uses: matlab-actions/setup-matlab@v4
         with:
           products: Simulink, Simulink_Check, Simulink_Test, Embedded_Coder
 
       - name: Verify MATLAB installation
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v4
         with:
           command: |
             disp('MATLAB CI pipeline is working!');
 
       - name: Load MATLAB project
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v4
         with:
           command: |
             proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));

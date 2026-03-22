@@ -2,9 +2,9 @@ name: MATLAB CI
 
 on:
   push:
-    branches: [main, Dev]
+    branches: [main, Dev, Test-Matlab-CI/CD]
   pull_request:
-    branches: [main, Dev]
+    branches: [main, Dev, Test-Matlab-CI/CD]
 
 permissions:
   contents: read
@@ -25,7 +25,6 @@ jobs:
             Simulink Check
             Simulink Test
             Embedded Coder
-      
 
       - name: Verify MATLAB installation
         uses: matlab-actions/run-command@v1
@@ -56,9 +55,19 @@ jobs:
                 if ~exist(resultsDir,'dir')
                     mkdir(resultsDir);
                 end
+                disp(['Saving results to: ', resultsDir]);
+                dir(resultsDir); % Debug: show folder contents
                 save(fullfile(resultsDir,'ci_results.mat'),'results');
             else
                 warning('Process Advisor not available in this environment. Skipping checks.');
+                % Create dummy file so artifact step always has something
+                resultsDir = fullfile(pwd,'PA_Results');
+                if ~exist(resultsDir,'dir')
+                    mkdir(resultsDir);
+                end
+                fid = fopen(fullfile(resultsDir,'dummy.txt'),'w');
+                fprintf(fid,'Process Advisor not available in this run.');
+                fclose(fid);
             end
 
       - name: Upload Process Advisor results

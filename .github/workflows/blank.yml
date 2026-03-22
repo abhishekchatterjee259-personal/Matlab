@@ -20,7 +20,12 @@ jobs:
       - name: Set up MATLAB with toolboxes
         uses: matlab-actions/setup-matlab@v2
         with:
-          products: Simulink, Simulink_Check, Simulink_Test, Embedded_Coder
+          products: |
+            Simulink
+            Simulink Check
+            Simulink Test
+            Embedded Coder
+      
 
       - name: Verify MATLAB installation
         uses: matlab-actions/run-command@v1

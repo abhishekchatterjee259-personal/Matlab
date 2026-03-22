@@ -32,14 +32,14 @@ jobs:
         uses: matlab-actions/run-command@v1
         with:
           command: |
-            proj = matlab.project.loadProject(fullfile(pwd,'Matlab-Test-CICD.prj'));
+            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
             disp(['Loaded project: ', proj.Name]);
 
       - name: Run Process Advisor checks (if available)
         uses: matlab-actions/run-command@v1
         with:
           command: |
-            proj = matlab.project.loadProject(fullfile(pwd,'Matlab-Test-CICD.prj'));
+            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
             if exist('padv.ProcessModel','class')
                 pm = padv.ProcessModel();
                 processmodel(pm);

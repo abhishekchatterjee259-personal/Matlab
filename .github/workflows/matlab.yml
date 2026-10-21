@@ -41,7 +41,7 @@ jobs:
         uses: matlab-actions/run-command@v2
         with:
           command: |
-            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
+            proj = matlab.project.loadProject(fullfile(pwd,'Mat.prj'));
             disp(['Loaded Project: ', proj.Name]);
 
       - name: Run Process Advisor checks
@@ -54,7 +54,7 @@ jobs:
                 mkdir(resultsDir);
             end
 
-            proj = matlab.project.loadProject(fullfile(pwd,'Mat.prj'));
+            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
 
             if exist('padv.ProcessModel','class')
 

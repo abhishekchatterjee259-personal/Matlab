@@ -54,7 +54,7 @@ jobs:
                 mkdir(resultsDir);
             end
 
-            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
+            proj = matlab.project.loadProject(fullfile(pwd,'Mat.prj'));
 
             if exist('padv.ProcessModel','class')
 

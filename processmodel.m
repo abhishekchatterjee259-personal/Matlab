@@ -19,9 +19,9 @@ function processmodel(pm)
     includeSimulinkWebViewTask = true;
     includeTestsPerTestCaseTask = true;
     includeMergeTestResultsTask = true;
-    includeGenerateCodeTask = false;
-    includeAnalyzeModelCode = false && padv.internal.util.isPolyspaceSupported && exist('polyspaceroot','file');
-    includeProveCodeQuality = false                    && padv.internal.util.isPolyspaceSupported && (~isempty(ver('pscodeprover')) || ~isempty(ver('pscodeproverserver')));
+    includeGenerateCodeTask = true;
+    includeAnalyzeModelCode = true && padv.internal.util.isPolyspaceSupported && exist('polyspaceroot','file');
+    includeProveCodeQuality = true && padv.internal.util.isPolyspaceSupported && (~isempty(ver('pscodeprover')) || ~isempty(ver('pscodeproverserver')));
     includeCodeInspection = false;
     includeGenerateRequirementsReport = false;
     includeIndexModelsTask = false;

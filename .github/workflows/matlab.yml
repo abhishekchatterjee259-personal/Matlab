@@ -1,11 +1,17 @@
-
 name: MATLAB CI
 
 on:
   push:
-    branches: [main, Dev, AbhiMergeResolve]
+    branches:
+      - main
+      - Dev
+      - AbhiMergeResolve
+
   pull_request:
-    branches: [main, Dev, AbhiMergeResolve]
+    branches:
+      - main
+      - Dev
+      - AbhiMergeResolve
 
 permissions:
   contents: read
@@ -18,56 +24,73 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up MATLAB with toolboxes
-        uses: matlab-actions/setup-matlab@v1
+      - name: Setup MATLAB
+        uses: matlab-actions/setup-matlab@v2
         with:
-          products: |
-            Simulink
-            Simulink Check
-            Simulink Test
-            Embedded Coder
+          release: R2024b
+
       - name: Verify MATLAB installation
-        uses: matlab-actions/run-command@v1
+        uses: matlab-actions/run-command@v2
         with:
           command: |
-            disp('MATLAB CI pipeline is working!');
-      - name: Load MATLAB project
-        uses: matlab-actions/run-command@v1
-        with:
-          command: |
-            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
-            disp(['Loaded project: ', proj.Name]);
-      - name: Run Process Advisor checks (if available)
-        uses: matlab-actions/run-command@v1
+            disp('MATLAB CI pipeline is working');
+            version
+            ver
+
+      - name: Load MATLAB Project
+        uses: matlab-actions/run-command@v2
         with:
           command: |
             proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
-            if exist('padv.ProcessModel','class')
-                pm = padv.ProcessModel();
-                processmodel(pm);
-                results = pm.runAll();
-                disp('Process Advisor checks completed.');
-                disp(results);
-                % Ensure results folder exists in runner workspace
-                resultsDir = fullfile(pwd,'PA_Results');
-                if ~exist(resultsDir,'dir')
-                    mkdir(resultsDir);
-                end
-                disp(['Saving results to: ', resultsDir]);
-                dir(resultsDir); % Debug: show folder contents
-                save(fullfile(resultsDir,'ci_results.mat'),'results');
-            else
-                warning('Process Advisor not available in this environment. Skipping checks.');
-                % Create dummy file so artifact step always has something
-                resultsDir = fullfile(pwd,'PA_Results');
-                if ~exist(resultsDir,'dir')
-                    mkdir(resultsDir);
-                end
-                fid = fopen(fullfile(resultsDir,'dummy.txt'),'w');
-                fprintf(fid,'Process Advisor not available in this run.');
-                fclose(fid);
+            disp(['Loaded Project: ', proj.Name]);
+
+      - name: Run Process Advisor checks
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+            resultsDir = fullfile(pwd,'PA_Results');
+
+            if ~exist(resultsDir,'dir')
+                mkdir(resultsDir);
             end
-      - name: Upload Process Advisor results
+
+            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
+
+            if exist('padv.ProcessModel','class')
+
+                disp('Process Advisor found.');
+
+                try
+                    pm = padv.ProcessModel;
+
+                    results = pm.runAll();
+
+                    save(fullfile(resultsDir,'ci_results.mat'),'results');
+
+                    disp('Process Advisor completed successfully.');
+
+                catch ME
+
+                    disp(getReport(ME));
+
+                    fid = fopen(fullfile(resultsDir,'ProcessAdvisorError.txt'),'w');
+                    fprintf(fid,'%s',getReport(ME));
+                    fclose(fid);
+
+                    rethrow(ME);
+                end
+
+            else
+
+                warning('Process Advisor not available.');
+
+                fid = fopen(fullfile(resultsDir,'dummy.txt'),'w');
+                fprintf(fid,'Process Advisor not available in this environment.');
+                fclose(fid);
+
+            end
+
+      - name: Upload Process Advisor Results
         if: always()
         uses: actions/upload-artifact@v4
         with:

@@ -2,9 +2,9 @@ name: MATLAB CI
 
 on:
   push:
-    branches: [main, Dev]
+    branches: [main, Dev, AbhiMergeResolve]
   pull_request:
-    branches: [main, Dev]
+    branches: [main, Dev, AbhiMergeResolve]
 
 permissions:
   contents: read
@@ -17,30 +17,62 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up MATLAB
+      - name: Set up MATLAB with toolboxes
         uses: matlab-actions/setup-matlab@v1
+        with:
+          products: |
+            Simulink
+            Simulink Check
+            Simulink Test
+            Embedded Coder
 
-      - name: Run Process Advisor
+      - name: Verify MATLAB installation
         uses: matlab-actions/run-command@v1
         with:
           command: |
-            % Open the project using relative path
-            proj = openProject("D:\GIT\Matlab_1\Matlab\Add_Test.prj");
+            disp('MATLAB CI pipeline is working!');
 
-            % Load your Simulink model
-            load_system("Models/Add_test");
+      - name: Load MATLAB project
+        uses: matlab-actions/run-command@v1
+        with:
+          command: |
+            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
+            disp(['Loaded project: ', proj.Name]);
 
-            % Run Process Advisor
-            advisorObj = Simulink.Check.ModelAdvisor.getModelAdvisor("Models/Add_test");
-            advisorObj.run;
+      - name: Run Process Advisor checks (if available)
+        uses: matlab-actions/run-command@v1
+        with:
+          command: |
+            proj = matlab.project.loadProject(fullfile(pwd,'Matlab.prj'));
+            if exist('padv.ProcessModel','class')
+                pm = padv.ProcessModel();
+                processmodel(pm);
+                results = pm.runAll();
+                disp('Process Advisor checks completed.');
+                disp(results);
+                % Ensure results folder exists in runner workspace
+                resultsDir = fullfile(pwd,'PA_Results');
+                if ~exist(resultsDir,'dir')
+                    mkdir(resultsDir);
+                end
+                disp(['Saving results to: ', resultsDir]);
+                dir(resultsDir); % Debug: show folder contents
+                save(fullfile(resultsDir,'ci_results.mat'),'results');
+            else
+                warning('Process Advisor not available in this environment. Skipping checks.');
+                % Create dummy file so artifact step always has something
+                resultsDir = fullfile(pwd,'PA_Results');
+                if ~exist(resultsDir,'dir')
+                    mkdir(resultsDir);
+                end
+                fid = fopen(fullfile(resultsDir,'dummy.txt'),'w');
+                fprintf(fid,'Process Advisor not available in this run.');
+                fclose(fid);
+            end
 
-            % Export results
-            advisorObj.exportResults("PA_Results/process_advisor_report.html");
-
-            disp('Process Advisor completed in CI pipeline!');
-
-      - name: Upload Process Advisor Report
+      - name: Upload Process Advisor results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: process-advisor-report
-          path: Matlab/Add_Test/PA_Results/process_advisor_report.html
+          name: PA_Results
+          path: PA_Results

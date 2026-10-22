@@ -2,10 +2,10 @@ name: MATLAB CI
 
 on:
   push:
-    branches: ["main","Dev","AbhiMergeResolve"]
+    branches: ["main","Dev","NewBranch"]
 
   pull_request:
-    branches: ["main","Dev","AbhiMergeResolve"]
+    branches: ["main","Dev","NewBranch"]
 
      
 permissions:

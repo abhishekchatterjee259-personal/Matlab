@@ -2,7 +2,7 @@ name: MATLAB CI
 
 on:
   push:
-    branches: ["main","Dev","chatNewBranch"]
+    branches: ["main","Dev","NewBranch"]
 
   pull_request:
     branches: ["main","Dev","NewBranch"]
